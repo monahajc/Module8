@@ -35,6 +35,11 @@ public class LobbyManager : NetworkBehaviour
             AddPlayerToList(NetworkManager.LocalClientId);
             RefreshPlayerPanels();
         }
+
+        if (IsClient)
+        {
+            btnReady.onClick.AddListener(ClientOnReadyClicked);
+        }
     }
 
     public override void OnNetworkSpawn()
