@@ -7,9 +7,9 @@ using UnityEngine.UI;
 
 public class LobbyPlayerPanel : MonoBehaviour
 {
-    [SerializeField] public TMPro.TMP_Text txtName;
-    [SerializeField] public TMPro.TMP_Text txtReady;
-    [SerializeField] public GameObject pnlColor;
+    [SerializeField] protected TMPro.TMP_Text txtName;
+    [SerializeField] protected TMPro.TMP_Text txtReady;
+    [SerializeField] protected GameObject pnlColor;
     private bool isReady = false;
 
     public void Start()

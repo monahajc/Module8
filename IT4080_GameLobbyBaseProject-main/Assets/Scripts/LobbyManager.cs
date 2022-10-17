@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class LobbyManager : NetworkBehaviour
 {
-
     public LobbyPlayerPanel playerPanelPrefab;
     public GameObject playersPanel;
     public GameObject playerScrollContent;
@@ -65,16 +64,14 @@ public class LobbyManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void ToggleReadyServerRPC(ServerRpcParams serverRpcParams = default)
     {
-        if (IsHost)
-        {
-            return;
-        }
         ulong clientId = serverRpcParams.Receive.SenderClientId;
         int playerIndex = FindPlayerIndex(clientId);
         PlayerInfo info = allPlayers[playerIndex];
 
         info.isReady = !info.isReady;
         allPlayers[playerIndex] = info;
+
+        RefreshPlayerPanels();
 
         info = allPlayers[playerIndex];
 
