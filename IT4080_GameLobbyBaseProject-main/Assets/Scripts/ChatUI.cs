@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class ChatUI : NetworkBehaviour
 {
+    const ulong SYSTEM_ID = 999999999;
     public TMPro.TMP_Text txtChatLog;
     public Button btnSend;
     public TMPro.TMP_InputField inputMessage;
@@ -25,11 +26,11 @@ public class ChatUI : NetworkBehaviour
         {
             NetworkManager.Singleton.OnClientConnectedCallback += HostOnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += HostOnClientDisconnected;
-            DisplayMessageLocally("You are the host!");
+            DisplayMessageLocally("You are the host!", SYSTEM_ID);
         }
         else
         {
-            DisplayMessageLocally($"You are Player #{NetworkManager.Singleton.LocalClientId}!");
+            DisplayMessageLocally($"You are Player #{NetworkManager.Singleton.LocalClientId}!", SYSTEM_ID);
         }
     }
 
@@ -46,10 +47,10 @@ public class ChatUI : NetworkBehaviour
         rpcParams.Send.TargetClientIds = singleClientId;
 
         singleClientId[0] = from;
-        SendChatMessageClientRpc($"[you] {message}", rpcParams);
+        SendChatMessageClientRpc($"<whisper> {message}", from, rpcParams);
 
         singleClientId[0] = to;
-        SendChatMessageClientRpc($"<whisper> {message}", rpcParams);
+        SendChatMessageClientRpc($"<whisper> {message}", from, rpcParams);
     }
     //------------------------------------
     // Events
@@ -57,12 +58,12 @@ public class ChatUI : NetworkBehaviour
     
     private void HostOnClientConnected(ulong clientId)
     {
-        SendChatMessageClientRpc($"Client {clientId} connected");
+        SendChatMessageClientRpc($"Client {clientId} connected", SYSTEM_ID);
     }
 
     private void HostOnClientDisconnected(ulong clientId)
     {
-        SendChatMessageClientRpc($"Client {clientId} disconnected");
+        SendChatMessageClientRpc($"Client {clientId} disconnected", SYSTEM_ID);
     }
     
     public void ClientOnSendClicked()
@@ -80,15 +81,15 @@ public class ChatUI : NetworkBehaviour
     //-------------------------------------
     
     [ClientRpc]
-    public void SendChatMessageClientRpc(string message, ClientRpcParams clientRpcParams = default)
+    public void SendChatMessageClientRpc(string message, ulong from, ClientRpcParams clientRpcParams = default)
     {
-        DisplayMessageLocally(message);
+        DisplayMessageLocally(message, from);
     }
+
     [ServerRpc(RequireOwnership = false)]
     public void SendChatMessageServerRpc(string message, ServerRpcParams serverRpcParams = default)
     {
         Debug.Log($"Host got message: {message}");
-        string newMessage = $"[Player #{serverRpcParams.Receive.SenderClientId}]: {message}";
 
         if(message.StartsWith("@"))
         {
@@ -100,13 +101,28 @@ public class ChatUI : NetworkBehaviour
         }
         else
         {
-            SendChatMessageClientRpc(newMessage);
+            SendChatMessageClientRpc(message, serverRpcParams.Receive.SenderClientId);
         }
     }
 
-    public void DisplayMessageLocally(string message)
+    public void DisplayMessageLocally(string message, ulong from)
     {
         Debug.Log(message);
+        string who;
+
+        if(from == NetworkManager.Singleton.LocalClientId)
+        {
+            who = "you";
+        }
+        else if(from == SYSTEM_ID)
+        {
+            who = "system";
+        }
+        else
+        {
+            who = $"Player #{from}";
+        }
+        string newMessage = $"\n[{who}]: {message}";
         txtChatLog.text += $"\n{message}";
     }
 }

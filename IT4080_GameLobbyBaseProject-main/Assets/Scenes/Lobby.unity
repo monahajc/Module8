@@ -2355,6 +2355,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ChatUI
       objectReference: {fileID: 0}
+    - target: {fileID: 5713464004228068338, guid: 02fcbf2a1d5e9f94aa59cca258af8cf8, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2784665274
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02fcbf2a1d5e9f94aa59cca258af8cf8, type: 3}
 --- !u!224 &2541884968711060027 stripped
