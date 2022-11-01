@@ -123,6 +123,6 @@ public class ChatUI : NetworkBehaviour
             who = $"Player #{from}";
         }
         string newMessage = $"\n[{who}]: {message}";
-        txtChatLog.text += $"\n{message}";
+        txtChatLog.text += $"\n{newMessage}";
     }
 }
